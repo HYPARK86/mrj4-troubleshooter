@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1d1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MR-J4 진단">
+<title>MR-J4 서보 트러블슈터</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+
+:root {
+  --bg: #121416;
+  --bg-elevated: #1c1f22;
+  --bg-card: #1a1d20;
+  --border: #2a2e32;
+  --text: #eef0f1;
+  --text-dim: #9aa3aa;
+  --text-faint: #656d73;
+  --accent: #ff6a1a;
+  --accent-dim: #4a3222;
+  --danger: #e5484d;
+  --safe: #3e9b5f;
+  --warn: #d6a339;
+  --radius: 14px;
+  --tag-db: #3a3d40;
+  --tag-edb: #5c3a24;
+  --tag-sd: #2f4a3a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", "Malgun Gothic", sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg); color: var(--text);
+  height: 100%; overscroll-behavior-y: none;
+}
+#app { min-height: 100vh; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(18,20,22,0.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding-top: env(safe-area-inset-top);
+}
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 38px; height: 38px; background: var(--accent); color: #14100a;
+  font-weight: 800; font-size: 15px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; letter-spacing: -0.5px;
+}
+.brand-text { display: flex; flex-direction: column; line-height: 1.25; }
+.brand-text strong { font-size: 15px; font-weight: 700; }
+.brand-text span { font-size: 11.5px; color: var(--text-dim); }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--bg-elevated); color: var(--text-dim); font-size: 17px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.icon-btn:active { background: #24282c; }
+main { flex: 1; padding: 16px; max-width: 720px; margin: 0 auto; width: 100%; }
+.offline-banner {
+  background: rgba(214,163,57,0.12); border: 1px solid rgba(214,163,57,0.35);
+  color: var(--warn); font-size: 12.5px; font-weight: 600; text-align: center;
+  padding: 8px 10px; border-radius: 10px; margin-bottom: 14px;
+}
+.search-section { margin-bottom: 4px; }
+.search-box {
+  position: relative; display: flex; align-items: center;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 14px; padding: 0 12px;
+}
+.search-icon { color: var(--text-faint); flex-shrink: 0; }
+#searchInput {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 16px; padding: 14px 10px; min-width: 0;
+}
+#searchInput::placeholder { color: var(--text-faint); }
+.clear-btn {
+  background: var(--border); color: var(--text-dim); border: none;
+  width: 24px; height: 24px; border-radius: 50%; font-size: 12px; cursor: pointer; flex-shrink: 0;
+}
+.clear-btn.hidden { display: none; }
+.result-count { font-size: 12.5px; color: var(--text-faint); padding: 10px 4px 0; min-height: 20px; }
+.chip-section { margin-top: 18px; }
+.chip-row-label { font-size: 12.5px; color: var(--text-dim); font-weight: 600; margin-bottom: 8px; padding: 0 2px; }
+.chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.chip-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.chip:active { background: #24282c; }
+.hidden { display: none !important; }
+#listSection { margin-top: 18px; }
+.alarm-list { display: flex; flex-direction: column; gap: 8px; }
+.alarm-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 14px; text-align: left; cursor: pointer; width: 100%;
+}
+.alarm-card:active { background: #202327; }
+.alarm-card-code { flex-shrink: 0; font-weight: 800; font-size: 14.5px; color: var(--accent); font-variant-numeric: tabular-nums; min-width: 66px; }
+.alarm-card-main { flex: 1; min-width: 0; }
+.alarm-card-title { font-size: 14.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alarm-card-sub { font-size: 12px; color: var(--text-faint); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alarm-card-tag { flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 7px; white-space: nowrap; }
+.tag-DB { background: var(--tag-db); color: #c9cdd1; }
+.tag-EDB { background: var(--tag-edb); color: #f2b98a; }
+.tag-SD { background: var(--tag-sd); color: #8fd6a8; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+.empty-icon { font-size: 32px; margin-bottom: 10px; color: var(--warn); }
+.empty-state p { margin: 4px 0; font-size: 14px; }
+.empty-sub { color: var(--text-faint); font-size: 12.5px !important; }
+.footer-note { text-align: center; padding: 20px 16px 30px; font-size: 11px; color: var(--text-faint); }
+.detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: flex; align-items: flex-end; }
+.detail-overlay.hidden { display: none; }
+.detail-sheet {
+  background: var(--bg); width: 100%; max-width: 720px; margin: 0 auto; max-height: 92vh;
+  border-radius: 20px 20px 0 0; overflow-y: auto; border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.detail-header {
+  display: flex; justify-content: space-between; align-items: center; padding: 14px 16px;
+  position: sticky; top: 0; background: var(--bg); z-index: 2;
+}
+.star-btn { color: var(--warn); font-size: 20px; }
+.detail-body { padding: 0 22px 30px; }
+.detail-code { font-size: 13px; font-weight: 800; color: var(--accent); letter-spacing: 0.5px; }
+.detail-title { font-size: 21px; font-weight: 700; margin: 6px 0 4px; line-height: 1.35; }
+.detail-group { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; }
+.detail-block { margin-bottom: 20px; }
+.detail-block-label { font-size: 12px; font-weight: 700; color: var(--text-faint); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+.stop-box { border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); }
+.stop-box strong { font-size: 14.5px; }
+.stop-box span { font-size: 12.5px; color: var(--text-dim); }
+.stop-box.tag-DB { background: rgba(255,255,255,0.03); }
+.stop-box.tag-EDB { background: rgba(255,106,26,0.08); }
+.stop-box.tag-SD { background: rgba(62,155,95,0.08); }
+.reset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.reset-pill { background: var(--bg-elevated); border: 1px solid var(--border); padding: 6px 11px; border-radius: 999px; font-size: 12.5px; color: var(--text); }
+.reset-pill.reset-none { color: var(--text-faint); }
+.placeholder-block { background: var(--bg-elevated); border: 1px dashed var(--border); border-radius: 12px; padding: 14px; }
+.placeholder-block .detail-block-label { margin-bottom: 6px; }
+.placeholder-body p { font-size: 13px; color: var(--text-dim); margin: 4px 0; line-height: 1.5; }
+.placeholder-ref { font-size: 11.5px !important; color: var(--text-faint) !important; }
+.ai-block { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: rgba(255,106,26,0.05); }
+.ai-block.disabled { opacity: 0.55; }
+.ai-hint { font-size: 12px; color: var(--text-faint); margin-top: 6px; }
+@media (min-width: 600px) { .alarm-card-sub { max-width: 320px; } }
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark">J4</span>
+        <div class="brand-text">
+          <strong>MR-J4 서보 트러블슈터</strong>
+          <span id="statusLine">미쓰비시 서보앰프 알람 검색</span>
+        </div>
+      </div>
+      <button id="favBtn" class="icon-btn" title="즐겨찾기" aria-label="즐겨찾기">★</button>
+    </div>
+  </header>
+
+  <main>
+
+    <div id="offlineBanner" class="offline-banner hidden">
+      오프라인 모드 · 저장된 매뉴얼 데이터로 키워드 검색 중
+    </div>
+
+    <section class="search-section">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14"/></svg>
+        <input id="searchInput" type="text" inputmode="search" placeholder="알람 코드 또는 증상 검색 (예: AL.52, 과전류)" autocomplete="off">
+        <button id="clearBtn" class="clear-btn" aria-label="지우기">✕</button>
+      </div>
+      <div id="resultCount" class="result-count"></div>
+    </section>
+
+    <section id="favSection" class="chip-section hidden">
+      <div class="chip-row-label">즐겨찾기</div>
+      <div id="favChips" class="chip-row"></div>
+    </section>
+
+    <section id="recentSection" class="chip-section hidden">
+      <div class="chip-row-label">최근 본 알람</div>
+      <div id="recentChips" class="chip-row"></div>
+    </section>
+
+    <section id="listSection">
+      <div id="alarmList" class="alarm-list"></div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">⚠</div>
+        <p>일치하는 알람이 없습니다.</p>
+        <p class="empty-sub">코드(예: 52, AL.52) 또는 한글 명칭으로 검색해 보세요.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="detailOverlay" class="detail-overlay hidden">
+    <div class="detail-sheet">
+      <div class="detail-header">
+        <button id="closeDetail" class="icon-btn" aria-label="닫기">✕</button>
+        <button id="toggleFav" class="icon-btn star-btn" aria-label="즐겨찾기 토글">☆</button>
+      </div>
+      <div id="detailBody" class="detail-body"></div>
+    </div>
+  </div>
+
+  <footer class="footer-note">
+    <span id="footerNote">MR-J4 트러블슈팅 매뉴얼 Ver.J 기준 · 1.2 알람 일람표</span>
+  </footer>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

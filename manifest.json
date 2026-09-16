@@ -1,0 +1,19 @@
+{
+  "name": "MR-J4 서보 트러블슈터",
+  "short_name": "MR-J4 진단",
+  "description": "미쓰비시 MR-J4 서보 알람 코드 검색 및 진단 도우미",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121416",
+  "theme_color": "#1a1d1f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
