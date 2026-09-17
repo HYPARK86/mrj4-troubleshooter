@@ -173,6 +173,39 @@ main { flex: 1; padding: 16px; max-width: 720px; margin: 0 auto; width: 100%; }
 .ts-branch-action { font-size: 12.5px; color: var(--text); font-weight: 600; flex: 1; }
 @media (min-width: 600px) { .alarm-card-sub { max-width: 320px; } }
 
+/* AI 자연어 질문 UI (ai-search.js) */
+.ai-ask-block {}
+.ai-ask-row { display: flex; gap: 8px; align-items: flex-end; }
+.ai-question-input {
+  flex: 1; resize: none; background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 13.5px; padding: 10px 12px;
+  font-family: inherit; min-height: 40px; max-height: 120px; outline: none;
+}
+.ai-question-input:focus { border-color: var(--accent); }
+.ai-ask-btn {
+  flex-shrink: 0; background: var(--accent); color: #1a1206; border: none;
+  font-weight: 700; font-size: 13px; padding: 0 16px; height: 40px; border-radius: 10px; cursor: pointer;
+}
+.ai-ask-btn:disabled { opacity: 0.6; }
+.ai-answer-area { margin-top: 12px; }
+.ai-answer-area.hidden { display: none; }
+.ai-loading { font-size: 12.5px; color: var(--text-dim); }
+.ai-error { font-size: 12.5px; color: var(--danger); }
+.ai-answer { font-size: 13.5px; line-height: 1.6; color: var(--text); }
+.ai-answer h4 { font-size: 13.5px; margin: 14px 0 6px; color: var(--accent); }
+.ai-answer h4:first-child { margin-top: 0; }
+.ai-answer p { margin: 6px 0; }
+.ai-answer ul { margin: 6px 0; padding-left: 18px; }
+.ai-answer li { margin: 3px 0; }
+.ai-answer strong { color: var(--text); }
+.ai-answer code { background: var(--bg-elevated); padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+.ai-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12.5px; }
+.ai-table th, .ai-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; }
+.ai-table th { background: var(--bg-elevated); color: var(--text-dim); font-weight: 700; }
+.empty-ai-section { margin-top: 22px; text-align: left; border-top: 1px solid var(--border); padding-top: 18px; }
+.empty-ai-section.hidden { display: none; }
+.empty-ai-label { font-size: 12.5px; color: var(--text-dim); font-weight: 600; margin-bottom: 8px; }
+
 </style>
 </head>
 <body>
@@ -244,5 +277,6 @@ main { flex: 1; padding: 16px; max-width: 720px; margin: 0 auto; width: 100%; }
 </div>
 
 <script src="app.js"></script>
+<script src="ai-search.js"></script>
 </body>
 </html>
