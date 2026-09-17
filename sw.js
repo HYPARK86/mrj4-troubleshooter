@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mrj4-troubleshooter-v2';
+const CACHE_NAME = 'mrj4-troubleshooter-v8';
 const CORE_ASSETS = [
   './',
   './index.html',
